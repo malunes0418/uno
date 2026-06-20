@@ -9,6 +9,7 @@ public class Room
     public required RuleSet Rules { get; set; }
     public required string HostId { get; set; }
     public RoomStatus Status { get; set; } = RoomStatus.Lobby;
+    public DateTime? GameStartedAt { get; set; }
     public List<LobbyPlayer> Players { get; } = new();
     // GameActor defined in Task 6
     public GameActor? Actor { get; set; }

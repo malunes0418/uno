@@ -1,18 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Uno.Server.Actors;
+using Uno.Server.Options;
 using Uno.Server.Persistence;
 using Uno.Server.Rooms;
 using Uno.Server.Sessions;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.Configure<GameOptions>(builder.Configuration.GetSection(GameOptions.SectionName));
 builder.Services.AddSingleton<GameRegistry>();
 builder.Services.AddSingleton<ConnectionRegistry>();
 builder.Services.AddSingleton<DisconnectMonitor>();
 builder.Services.AddHealthChecks();
 builder.Services.AddSignalR()
     .AddJsonProtocol(o => o.PayloadSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase);
+
+var corsOrigins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>()
+    ?? ["http://localhost:3000"];
 builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
-    p.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
+    p.WithOrigins(corsOrigins).AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
 
 if (builder.Environment.IsDevelopment())
 {

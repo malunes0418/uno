@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Options;
 using Uno.Engine.Commands;
 using Uno.Engine.State;
 using Uno.Server.Actors;
 using Uno.Server.Contracts;
+using Uno.Server.Options;
+using Uno.Server.Persistence;
 using Uno.Server.Rooms;
 using Uno.Server.Sessions;
 
@@ -13,12 +16,21 @@ public class GameHub : Microsoft.AspNetCore.SignalR.Hub
     private readonly GameRegistry _registry;
     private readonly ConnectionRegistry _connections;
     private readonly DisconnectMonitor _disconnectMonitor;
+    private readonly MatchHistoryWriter? _matchHistoryWriter;
+    private readonly GameOptions _gameOptions;
 
-    public GameHub(GameRegistry registry, ConnectionRegistry connections, DisconnectMonitor disconnectMonitor)
+    public GameHub(
+        GameRegistry registry,
+        ConnectionRegistry connections,
+        DisconnectMonitor disconnectMonitor,
+        IOptions<GameOptions> gameOptions,
+        MatchHistoryWriter? matchHistoryWriter = null)
     {
         _registry = registry;
         _connections = connections;
         _disconnectMonitor = disconnectMonitor;
+        _gameOptions = gameOptions.Value;
+        _matchHistoryWriter = matchHistoryWriter;
     }
 
     public async Task<CreateRoomResult> CreateRoom(RuleSetDto rulesDto, string displayName, string playerId)
@@ -62,6 +74,7 @@ public class GameHub : Microsoft.AspNetCore.SignalR.Hub
 
         var seats = room.Players.Select(p => (p.Id, p.Name, p.IsBot)).ToList();
         var seed = Random.Shared.Next();
+        room.GameStartedAt = DateTime.UtcNow;
         room.Actor = new GameActor(code, room.Rules, seats, seed,
             onBroadcast: async (viewerId, dto, events, version) =>
             {
@@ -70,7 +83,18 @@ public class GameHub : Microsoft.AspNetCore.SignalR.Hub
                     await Clients.Client(c).SendAsync("GameStateUpdated", dto);
                 await Clients.Group(code).SendAsync("GameEvents", new GameEventBatchDto(version, events));
             },
-            getViewers: () => room.Players.Where(p => !p.IsBot).Select(p => p.Id).ToList());
+            getViewers: () => room.Players.Where(p => !p.IsBot).Select(p => p.Id).ToList(),
+            onGameEnded: async state =>
+            {
+                if (_matchHistoryWriter is not null)
+                {
+                    var winnerId = state.Players.MaxBy(p => p.Score)!.Id;
+                    await _matchHistoryWriter.SaveAsync(room, state, winnerId, room.GameStartedAt!.Value);
+                }
+                room.Status = RoomStatus.Finished;
+                await BroadcastRoom(room);
+            },
+            options: _gameOptions);
 
         await room.Actor.StartAsync();
         room.Status = RoomStatus.InGame;
@@ -137,7 +161,8 @@ public class GameHub : Microsoft.AspNetCore.SignalR.Hub
             if (room is not null)
             {
                 SetPlayerConnected(room, playerId, connected: false);
-                _disconnectMonitor.Schedule(roomCode, playerId, TimeSpan.FromSeconds(30), async () =>
+                _disconnectMonitor.Schedule(roomCode, playerId,
+                    TimeSpan.FromSeconds(_gameOptions.DisconnectTimeoutSeconds), async () =>
                 {
                     if (room.Actor?.CurrentState is { } s && s.CurrentPlayer.Id == playerId)
                         await room.Actor.SubmitAsync(new DrawCard(playerId), s.Version);
