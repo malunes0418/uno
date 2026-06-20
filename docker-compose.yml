@@ -1,0 +1,8 @@
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: uno
+      MYSQL_DATABASE: uno
+    ports:
+      - "3306:3306"
