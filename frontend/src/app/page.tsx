@@ -5,9 +5,11 @@ import { usePlayerStore } from "@/lib/store/playerStore";
 import { GameHubClient } from "@/lib/hub/gameHubClient";
 import { useGameStore } from "@/lib/store/gameStore";
 import { Button } from "@/components/ui/Button";
+import { RuleToggles } from "@/components/ui/RuleToggles";
+import type { RuleSetDto } from "@/lib/hub/contract";
 
-const defaultRules = {
-  stacking: "None" as const,
+const defaultRules: RuleSetDto = {
+  stacking: "None",
   drawToMatch: false,
   jumpIn: false,
   sevenZero: false,
@@ -22,6 +24,7 @@ export default function Home() {
   const { displayName, setDisplayName, ensurePlayerId, load } = usePlayerStore();
   const [joinCode, setJoinCode] = useState("");
   const [nameError, setNameError] = useState(false);
+  const [rules, setRules] = useState(defaultRules);
 
   useEffect(() => {
     load();
@@ -41,7 +44,7 @@ export default function Home() {
     const hub = new GameHubClient();
     await hub.start();
     const playerId = ensurePlayerId();
-    const { code } = await hub.createRoom(defaultRules, displayName.trim(), playerId);
+    const { code } = await hub.createRoom(rules, displayName.trim(), playerId);
     useGameStore.getState().reset();
     router.push(`/lobby/${code}`);
   };
@@ -64,6 +67,7 @@ export default function Home() {
         onChange={(e) => setDisplayName(e.target.value)}
       />
       {nameError && <p>Enter your name</p>}
+      <RuleToggles rules={rules} onChange={setRules} />
       <Button onClick={createRoom}>Create Room</Button>
       <input
         placeholder="Join code"
