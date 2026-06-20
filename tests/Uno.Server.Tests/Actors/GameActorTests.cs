@@ -15,7 +15,8 @@ public class GameActorTests
         var actor = new GameActor("ROOM", RuleSet.Classic,
             new[] { ("p1", "A", false), ("p2", "B", false) },
             seed: 7,
-            onBroadcast: (_, __, ___, ver) => { tcs.TrySetResult(ver); return Task.CompletedTask; });
+            onBroadcast: (_, __, ___, ver) => { tcs.TrySetResult(ver); return Task.CompletedTask; },
+            getViewers: () => new[] { "p1", "p2" });
 
         await actor.StartAsync();
         var state = actor.CurrentState!;
@@ -34,11 +35,32 @@ public class GameActorTests
     {
         var actor = new GameActor("ROOM", RuleSet.Classic,
             new[] { ("p1", "A", false), ("p2", "B", false) }, 7,
-            (_, __, ___, ____) => Task.CompletedTask);
+            (_, __, ___, ____) => Task.CompletedTask,
+            getViewers: () => new[] { "p1", "p2" });
         await actor.StartAsync();
         var before = actor.CurrentState!.Version;
         await actor.SubmitAsync(new DrawCard("p1"), lastSeenVersion: before - 1);
         actor.CurrentState!.Version.Should().Be(before);
+        await actor.DisposeAsync();
+    }
+
+    [Fact]
+    public async Task Broadcast_ProjectsPerViewer()
+    {
+        var projections = new List<string>();
+        var actor = new GameActor("ROOM", RuleSet.Classic,
+            new[] { ("p1", "A", false), ("p2", "B", false) }, 7,
+            (viewerId, dto, _, __) =>
+            {
+                projections.Add(viewerId);
+                dto.ViewerId.Should().Be(viewerId);
+                return Task.CompletedTask;
+            },
+            getViewers: () => new[] { "p1", "p2" });
+
+        await actor.StartAsync();
+        await actor.SubmitAsync(new DrawCard("p1"), actor.CurrentState!.Version);
+        projections.Should().Contain(new[] { "p1", "p2" });
         await actor.DisposeAsync();
     }
 }

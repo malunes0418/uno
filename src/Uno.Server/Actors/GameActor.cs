@@ -13,6 +13,7 @@ public class GameActor : IAsyncDisposable
         new UnboundedChannelOptions { SingleReader = true, SingleWriter = false });
     private readonly string _roomCode;
     private readonly Func<string, ClientGameStateDto, IReadOnlyList<GameEventDto>, int, Task> _onBroadcast;
+    private readonly Func<IReadOnlyList<string>> _getViewers;
     private GameState? _state;
     private Task? _loop;
     private CancellationTokenSource? _cts;
@@ -24,10 +25,12 @@ public class GameActor : IAsyncDisposable
         RuleSet rules,
         IReadOnlyList<(string Id, string Name, bool IsBot)> seats,
         int seed,
-        Func<string, ClientGameStateDto, IReadOnlyList<GameEventDto>, int, Task> onBroadcast)
+        Func<string, ClientGameStateDto, IReadOnlyList<GameEventDto>, int, Task> onBroadcast,
+        Func<IReadOnlyList<string>> getViewers)
     {
         _roomCode = roomCode;
         _onBroadcast = onBroadcast;
+        _getViewers = getViewers;
         _state = GameSetup.NewGame(seats, rules, seed);
     }
 
@@ -76,8 +79,11 @@ public class GameActor : IAsyncDisposable
     private async Task Broadcast(GameState state, IReadOnlyList<GameEvent> events)
     {
         var eventDtos = events.Select(DtoMappers.ToDto).ToList();
-        var viewerDto = StateProjection.Project(_roomCode, state, state.CurrentPlayer.Id);
-        await _onBroadcast(state.CurrentPlayer.Id, viewerDto, eventDtos, state.Version);
+        foreach (var viewerId in _getViewers())
+        {
+            var dto = StateProjection.Project(_roomCode, state, viewerId);
+            await _onBroadcast(viewerId, dto, eventDtos, state.Version);
+        }
     }
 
     public async ValueTask DisposeAsync()
