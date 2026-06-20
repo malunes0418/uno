@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
+using Uno.Server.Actors;
 using Uno.Server.Contracts;
 using Uno.Server.Rooms;
 using Uno.Server.Sessions;
@@ -45,6 +46,45 @@ public class GameHub : Microsoft.AspNetCore.SignalR.Hub
         if (!_registry.AddBot(code, room.HostId))
             throw new HubException("Cannot add bot.");
         await BroadcastRoom(room);
+    }
+
+    public async Task StartGame(string code)
+    {
+        var playerId = _connections.GetPlayerId(Context.ConnectionId)!;
+        var room = _registry.GetRoom(code) ?? throw new HubException("Room not found.");
+        if (room.HostId != playerId) throw new HubException("Only host can start.");
+        if (room.Status != RoomStatus.Lobby) throw new HubException("Already started.");
+        if (room.Players.Count < 2) throw new HubException("Need at least 2 players.");
+
+        var seats = room.Players.Select(p => (p.Id, p.Name, p.IsBot)).ToList();
+        var seed = Random.Shared.Next();
+        room.Actor = new GameActor(code, room.Rules, seats, seed,
+            onBroadcast: async (viewerId, dto, events, version) =>
+            {
+                var conns = _connections.GetConnectionIds(code, viewerId);
+                foreach (var c in conns)
+                    await Clients.Client(c).SendAsync("GameStateUpdated", dto);
+                await Clients.Group(code).SendAsync("GameEvents", new GameEventBatchDto(version, events));
+            },
+            getViewers: () => room.Players.Where(p => !p.IsBot).Select(p => p.Id).ToList());
+
+        await room.Actor.StartAsync();
+        room.Status = RoomStatus.InGame;
+        await BroadcastRoom(room);
+        foreach (var human in room.Players.Where(p => !p.IsBot))
+        {
+            var dto = StateProjection.Project(code, room.Actor.CurrentState!, human.Id);
+            foreach (var c in _connections.GetConnectionIds(code, human.Id))
+                await Clients.Client(c).SendAsync("GameStateUpdated", dto);
+        }
+    }
+
+    public async Task SendCommand(string code, CommandDto commandDto, int lastSeenVersion)
+    {
+        var room = _registry.GetRoom(code) ?? throw new HubException("Room not found.");
+        if (room.Actor is null) throw new HubException("Game not started.");
+        var cmd = DtoMappers.ToEngine(commandDto);
+        await room.Actor.SubmitAsync(cmd, lastSeenVersion);
     }
 
     private async Task BroadcastRoom(Room room)
