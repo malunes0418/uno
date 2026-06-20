@@ -1,0 +1,248 @@
+.lobby {
+  min-height: 100%;
+  background:
+    radial-gradient(ellipse 70% 45% at 15% 0%, rgba(229, 57, 53, 0.16) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 40% at 90% 10%, rgba(30, 136, 229, 0.14) 0%, transparent 50%),
+    radial-gradient(ellipse at top, var(--felt-green) 0%, var(--background) 72%);
+}
+
+.shell {
+  max-width: 32rem;
+  gap: var(--space-5);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  text-align: center;
+}
+
+.eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--foreground-muted);
+}
+
+.title {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.titleAccent {
+  background: linear-gradient(
+    90deg,
+    var(--uno-red),
+    var(--uno-yellow),
+    var(--uno-green),
+    var(--uno-blue)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.roomCodeBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.roomCodeLabel {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--foreground-muted);
+}
+
+.roomCodeRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.roomCode {
+  font-family: var(--font-geist-mono, ui-monospace, monospace);
+  font-size: clamp(2rem, 6vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-sm);
+  user-select: all;
+}
+
+.copyButton {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface);
+  color: var(--foreground-muted);
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.copyButton:hover {
+  background: var(--surface-raised);
+  color: var(--foreground);
+}
+
+.copyButton:focus-visible {
+  outline: 2px solid var(--uno-yellow);
+  outline-offset: 2px;
+}
+
+.errorBanner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(229, 57, 53, 0.18);
+  border: 1px solid rgba(229, 57, 53, 0.45);
+  color: #ff8a80;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.errorBanner::before {
+  content: "!";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  background: var(--uno-red);
+  color: var(--foreground);
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.loadingCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-8) var(--space-6);
+}
+
+.waitingCards {
+  position: relative;
+  width: 8rem;
+  height: 5rem;
+}
+
+.waitingCards > * {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.waitCard1 {
+  transform: translateX(-50%) rotate(-12deg) translateX(-1.25rem);
+  animation: cardPulse 2.4s ease-in-out infinite;
+}
+
+.waitCard2 {
+  animation: cardPulse 2.4s ease-in-out 0.4s infinite;
+  z-index: 2;
+}
+
+.waitCard3 {
+  transform: translateX(-50%) rotate(12deg) translateX(1.25rem);
+  animation: cardPulse 2.4s ease-in-out 0.8s infinite;
+}
+
+@keyframes cardPulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    filter: brightness(0.92);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.08);
+  }
+}
+
+.loadingText {
+  font-size: 0.9375rem;
+  color: var(--foreground-muted);
+}
+
+.playersCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.sectionTitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--foreground-muted);
+}
+
+.rulesSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ruleChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ruleChip {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--foreground-muted);
+}
+
+.hostActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.hostActions > * {
+  width: 100%;
+}
+
+.waitingHint {
+  text-align: center;
+  font-size: 0.9375rem;
+  color: var(--foreground-muted);
+  padding: var(--space-2) 0;
+}
+
+@media (max-width: 480px) {
+  .roomCodeRow {
+    flex-direction: column;
+  }
+
+  .hostActions {
+    grid-template-columns: 1fr;
+  }
+}
