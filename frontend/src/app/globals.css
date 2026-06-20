@@ -52,6 +52,7 @@ a {
   position: relative;
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
 }
 
 .game-shell canvas {
@@ -59,8 +60,14 @@ a {
   height: 100% !important;
 }
 
-.hud {
+.hud,
+.color-picker,
+.scoreboard {
   position: absolute;
+  z-index: 10;
+}
+
+.hud {
   top: 1rem;
   left: 1rem;
   display: flex;
@@ -72,5 +79,119 @@ a {
   border-radius: 0.5rem;
   font-size: 0.9rem;
   pointer-events: none;
-  z-index: 10;
+}
+
+.scoreboard {
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  pointer-events: auto;
+}
+
+.scoreboard ul {
+  list-style: none;
+  text-align: center;
+}
+
+.scoreboard li {
+  padding: 0.25rem 0;
+  font-size: 1.1rem;
+}
+
+.color-picker {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 0.75rem;
+  z-index: 20;
+}
+
+.color-picker .swatch {
+  border: 2px solid #fff;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.color-picker .swatch.red { background: #e53935; }
+.color-picker .swatch.yellow { background: #fdd835; color: #333; }
+.color-picker .swatch.green { background: #43a047; }
+.color-picker .swatch.blue { background: #1e88e5; }
+
+.uno-button {
+  position: absolute;
+  bottom: 6rem;
+  right: 1.5rem;
+  z-index: 20;
+}
+
+.uno-button button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  background: #ff5722;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.catch-prompt {
+  position: absolute;
+  top: 5rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 20;
+}
+
+.catch-prompt button {
+  padding: 0.5rem 1rem;
+  background: #d32f2f;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.jump-in-highlight {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.75);
+  border-radius: 0.5rem;
+  z-index: 20;
+}
+
+.jump-in-label {
+  color: #ffeb3b;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.jump-in-card {
+  padding: 0.5rem 0.75rem;
+  background: #fff;
+  color: #333;
+  border: 2px solid #ffeb3b;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  box-shadow: 0 0 8px #ffeb3b;
 }
