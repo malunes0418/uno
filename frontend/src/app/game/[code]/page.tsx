@@ -19,6 +19,7 @@ import { ColorPicker } from "@/components/ui/ColorPicker";
 import { UnoButton } from "@/components/ui/UnoButton";
 import { CatchPrompt } from "@/components/ui/CatchPrompt";
 import { JumpInHighlight } from "@/components/ui/JumpInHighlight";
+import { Scoreboard } from "@/components/ui/Scoreboard";
 
 function GameOverlays() {
   const state = useGameStore((s) => s.gameState);
@@ -94,6 +95,7 @@ export default function GamePage() {
         <TableScene />
         <HudOverlay />
         <GameOverlays />
+        <Scoreboard />
       </div>
     </GameHubProvider>
   );
