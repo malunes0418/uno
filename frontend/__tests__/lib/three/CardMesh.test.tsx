@@ -41,4 +41,17 @@ describe("CardMesh", () => {
       ),
     ).not.toThrow();
   });
+
+  it("opacityCloneDoesNotDisposeSharedTextureMap", () => {
+    const { unmount } = render(
+      <div data-testid="mock-canvas">
+        <CardTextureProvider>
+          <CardMesh color="Red" type="Five" opacity={0.4} />
+        </CardTextureProvider>
+      </div>,
+    );
+    const cachedMap = mockTexture.clone.mock.results[0]?.value;
+    unmount();
+    expect(cachedMap?.dispose).not.toHaveBeenCalled();
+  });
 });

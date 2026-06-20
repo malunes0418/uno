@@ -36,6 +36,8 @@ export function CardMesh({
   useEffect(() => {
     if (opacity === 1) return;
     return () => {
+      // Cloned materials share the cached texture map — do not dispose it.
+      material.map = null;
       material.dispose();
     };
   }, [material, opacity]);
