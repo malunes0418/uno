@@ -72,9 +72,9 @@ export default function Home() {
             Deal in, stack wilds, and race to empty your hand — online with friends.
           </p>
           <div className={styles.cardFan} aria-hidden>
-            <CardFace />
-            <CardFace />
-            <CardFace />
+            <CardFace faceUp={false} size="md" />
+            <CardFace color="Red" type="Five" size="md" />
+            <CardFace color="Wild" type="Wild" size="md" />
           </div>
         </section>
 

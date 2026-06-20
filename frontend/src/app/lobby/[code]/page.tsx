@@ -6,6 +6,7 @@ import { GameHubClient } from "@/lib/hub/gameHubClient";
 import { useGameStore } from "@/lib/store/gameStore";
 import { usePlayerStore } from "@/lib/store/playerStore";
 import { Button } from "@/components/ui/Button";
+import { CardFace } from "@/components/ui/CardFace";
 
 export default function LobbyPage() {
   const { code } = useParams<{ code: string }>();
@@ -43,6 +44,7 @@ export default function LobbyPage() {
       <ul>
         {room?.players.map((p) => (
           <li key={p.id}>
+            <CardFace faceUp={false} size="sm" />
             {p.name}
             {p.isBot ? " (bot)" : ""}
           </li>

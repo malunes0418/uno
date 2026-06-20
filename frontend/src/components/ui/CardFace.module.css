@@ -1,22 +1,20 @@
 .card {
-  width: 4.5rem;
   aspect-ratio: 2 / 3;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-md);
   flex-shrink: 0;
+  background-repeat: no-repeat;
+  image-rendering: auto;
 }
 
-.back {
-  background: linear-gradient(
-    145deg,
-    var(--uno-red) 0%,
-    var(--uno-black) 40%,
-    var(--uno-blue) 100%
-  );
-  border: 2px solid rgba(255, 255, 255, 0.2);
+.sm {
+  width: 2.25rem;
 }
 
-.front {
-  background: var(--surface-card);
-  border: 2px solid var(--border-subtle);
+.md {
+  width: 4.5rem;
+}
+
+.lg {
+  width: 6rem;
 }

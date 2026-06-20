@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 export interface UvRect { u: number; v: number; w: number; h: number; }
 
 const COLS = 12;
@@ -40,3 +42,18 @@ export function uvForCard(color: string, type: string): UvRect {
   const col = NUMBER_START_COL[color] + TYPE_OFFSET[type];
   return cell(col, row);
 }
+
+export function atlasBackgroundStyleFromUv(uv: UvRect): Pick<CSSProperties, "backgroundSize" | "backgroundPosition"> {
+  const col = uv.u / uv.w;
+  const row = (1 - uv.v - uv.h) / uv.h;
+  return {
+    backgroundSize: `${COLS * 100}% ${ROWS * 100}%`,
+    backgroundPosition: `${(col / (COLS - 1)) * 100}% ${(row / (ROWS - 1)) * 100}%`,
+  };
+}
+
+export function atlasBackgroundStyle(color: string, type: string): Pick<CSSProperties, "backgroundSize" | "backgroundPosition"> {
+  return atlasBackgroundStyleFromUv(uvForCard(color, type));
+}
+
+export const CARD_ATLAS_URL = "/uno_classic.png";

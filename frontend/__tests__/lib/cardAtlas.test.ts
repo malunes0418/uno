@@ -1,16 +1,36 @@
 import { describe, it, expect } from "vitest";
-import { uvForCard, uvForBack } from "@/lib/cards/cardAtlas";
+import {
+  atlasBackgroundStyle,
+  atlasBackgroundStyleFromUv,
+  uvForCard,
+  uvForBack,
+} from "@/lib/cards/cardAtlas";
+
+function expectedStyleFromUv(uv: ReturnType<typeof uvForCard>) {
+  const col = uv.u / uv.w;
+  const row = (1 - uv.v - uv.h) / uv.h;
+  return {
+    backgroundSize: "1200% 600%",
+    backgroundPosition: `${(col / 11) * 100}% ${(row / 5) * 100}%`,
+  };
+}
 
 describe("cardAtlas", () => {
-  it("redFive_mapsToExpectedCell", () => {
+  it("atlasBackgroundStyle_matchesRedFiveUv", () => {
     const uv = uvForCard("Red", "Five");
-    expect(uv.u).toBeCloseTo(5 / 12, 3);
-    expect(uv.v).toBeCloseTo(1 - 3 / 6, 3); // row 2 → v from top
+    const style = atlasBackgroundStyle("Red", "Five");
+    const expected = expectedStyleFromUv(uv);
+
+    expect(style.backgroundSize).toBe(expected.backgroundSize);
+    expect(style.backgroundPosition).toBe(expected.backgroundPosition);
   });
 
-  it("back_isTopLeft", () => {
+  it("atlasBackgroundStyleFromUv_matchesBack", () => {
     const uv = uvForBack();
-    expect(uv.u).toBeCloseTo(0, 3);
-    expect(uv.v).toBeCloseTo(1 - 1 / 6, 3);
+    const style = atlasBackgroundStyleFromUv(uv);
+    const expected = expectedStyleFromUv(uv);
+
+    expect(style.backgroundSize).toBe(expected.backgroundSize);
+    expect(style.backgroundPosition).toBe(expected.backgroundPosition);
   });
 });
