@@ -10,7 +10,7 @@ function cell(col: number, row: number): UvRect {
 }
 
 const NUMBER_ROWS: Record<string, number> = {
-  Yellow: 1, Red: 3, Blue: 3, Green: 4,
+  Yellow: 1, Red: 2, Blue: 3, Green: 4,
 };
 
 const NUMBER_START_COL: Record<string, number> = {

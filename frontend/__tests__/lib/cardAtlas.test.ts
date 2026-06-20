@@ -5,7 +5,7 @@ describe("cardAtlas", () => {
   it("redFive_mapsToExpectedCell", () => {
     const uv = uvForCard("Red", "Five");
     expect(uv.u).toBeCloseTo(5 / 12, 3);
-    expect(uv.v).toBeCloseTo(1 - 4 / 6, 3); // row 3 → v from top
+    expect(uv.v).toBeCloseTo(1 - 3 / 6, 3); // row 2 → v from top
   });
 
   it("back_isTopLeft", () => {
