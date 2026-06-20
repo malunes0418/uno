@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store/gameStore";
 import { Button } from "@/components/ui/Button";
@@ -20,7 +21,7 @@ function ScoreboardConfetti() {
   return (
     <div className="scoreboard-confetti" aria-hidden>
       {Array.from({ length: CONFETTI_COUNT }, (_, i) => (
-        <span key={i} className="scoreboard-confetti-piece" style={{ "--i": i }} />
+        <span key={i} className="scoreboard-confetti-piece" style={{ "--i": i } as CSSProperties} />
       ))}
     </div>
   );
