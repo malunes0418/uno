@@ -91,6 +91,22 @@ public class GameHub : Microsoft.AspNetCore.SignalR.Hub
         await room.Actor.SubmitAsync(cmd, lastSeenVersion);
     }
 
+    public async Task LeaveRoom(string code)
+    {
+        var playerId = _connections.GetPlayerId(Context.ConnectionId)!;
+        var room = _registry.GetRoom(code);
+        if (room is null) return;
+        room.Players.RemoveAll(p => p.Id == playerId);
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, code);
+        if (room.Players.Count == 0 || room.Status == RoomStatus.Finished)
+        {
+            if (room.Actor is not null) await room.Actor.DisposeAsync();
+            _registry.RemoveRoom(code);
+            return;
+        }
+        await BroadcastRoom(room);
+    }
+
     public async Task Reconnect(string code, string playerId, string displayName)
     {
         var room = _registry.GetRoom(code) ?? throw new HubException("Room not found.");
