@@ -14,28 +14,56 @@ function winnerId(state: ClientGameStateDto): string | null {
   return state.players.find((p) => p.handCount === 0)?.id ?? null;
 }
 
+const CONFETTI_COUNT = 28;
+
+function ScoreboardConfetti() {
+  return (
+    <div className="scoreboard-confetti" aria-hidden>
+      {Array.from({ length: CONFETTI_COUNT }, (_, i) => (
+        <span key={i} className="scoreboard-confetti-piece" style={{ "--i": i }} />
+      ))}
+    </div>
+  );
+}
+
 export function Scoreboard() {
   const router = useRouter();
   const state = useGameStore((s) => s.gameState);
   if (!state || (state.phase !== "RoundOver" && state.phase !== "GameOver")) return null;
 
   const winner = winnerId(state);
+  const ranked = [...state.players].sort((a, b) => b.score - a.score);
+  const isGameOver = state.phase === "GameOver";
 
   return (
-    <div className="scoreboard">
-      <h2>{state.phase === "GameOver" ? "Game Over" : "Round Over"}</h2>
-      <ul>
-        {state.players.map((p) => {
-          const isWinner = p.id === winner;
-          return (
-            <li key={p.id} className={isWinner ? "scoreboard-winner" : undefined}>
-              {isWinner && <CardFace color="Wild" type="Wild" size="sm" />}
-              {p.name}: {p.score}
-            </li>
-          );
-        })}
-      </ul>
-      <Button onClick={() => router.push("/")}>Play Again</Button>
+    <div className="scoreboard-backdrop">
+      {isGameOver && <ScoreboardConfetti />}
+      <div className="scoreboard-modal" role="dialog" aria-labelledby="scoreboard-title">
+        <h2 id="scoreboard-title" className="scoreboard-title">
+          {isGameOver ? "Game Over" : "Round Over"}
+        </h2>
+        <ol className="scoreboard-list">
+          {ranked.map((p, index) => {
+            const isWinner = p.id === winner;
+            return (
+              <li
+                key={p.id}
+                className={isWinner ? "scoreboard-row scoreboard-winner" : "scoreboard-row"}
+              >
+                <span className="scoreboard-rank">{index + 1}</span>
+                <span className="scoreboard-trophy">
+                  {isWinner && <CardFace color="Wild" type="Wild" size="sm" />}
+                </span>
+                <span className="scoreboard-name">{p.name}</span>
+                <span className="scoreboard-score">{p.score}</span>
+              </li>
+            );
+          })}
+        </ol>
+        <Button variant="primary" className="scoreboard-play-again" onClick={() => router.push("/")}>
+          Play Again
+        </Button>
+      </div>
     </div>
   );
 }
