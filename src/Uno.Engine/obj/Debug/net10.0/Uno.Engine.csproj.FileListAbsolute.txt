@@ -1,0 +1,12 @@
+C:\Users\cayma\Desktop\Projs\uno\src\Uno.Engine\bin\Debug\net10.0\Uno.Engine.deps.json
+C:\Users\cayma\Desktop\Projs\uno\src\Uno.Engine\bin\Debug\net10.0\Uno.Engine.dll
+C:\Users\cayma\Desktop\Projs\uno\src\Uno.Engine\bin\Debug\net10.0\Uno.Engine.pdb
+C:\Users\cayma\Desktop\Projs\uno\src\Uno.Engine\obj\Debug\net10.0\Uno.Engine.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\cayma\Desktop\Projs\uno\src\Uno.Engine\obj\Debug\net10.0\Uno.Engine.AssemblyInfoInputs.cache
+C:\Users\cayma\Desktop\Projs\uno\src\Uno.Engine\obj\Debug\net10.0\Uno.Engine.AssemblyInfo.cs
+C:\Users\cayma\Desktop\Projs\uno\src\Uno.Engine\obj\Debug\net10.0\Uno.Engine.csproj.CoreCompileInputs.cache
+C:\Users\cayma\Desktop\Projs\uno\src\Uno.Engine\obj\Debug\net10.0\Uno.Engine.sourcelink.json
+C:\Users\cayma\Desktop\Projs\uno\src\Uno.Engine\obj\Debug\net10.0\Uno.Engine.dll
+C:\Users\cayma\Desktop\Projs\uno\src\Uno.Engine\obj\Debug\net10.0\refint\Uno.Engine.dll
+C:\Users\cayma\Desktop\Projs\uno\src\Uno.Engine\obj\Debug\net10.0\Uno.Engine.pdb
+C:\Users\cayma\Desktop\Projs\uno\src\Uno.Engine\obj\Debug\net10.0\ref\Uno.Engine.dll
