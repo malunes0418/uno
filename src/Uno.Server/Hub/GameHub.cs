@@ -59,7 +59,7 @@ public class GameHub : Microsoft.AspNetCore.SignalR.Hub
     {
         var playerId = _connections.GetPlayerId(Context.ConnectionId)!;
         var room = _registry.GetRoom(code)!;
-        if (!_registry.AddBot(code, room.HostId))
+        if (!_registry.AddBot(code, playerId))
             throw new HubException("Cannot add bot.");
         await BroadcastRoom(room);
     }

@@ -97,8 +97,22 @@ public class GameActor : IAsyncDisposable
         if (events.OfType<GameEnded>().Any() && _onGameEnded is not null)
             await _onGameEnded(_state!);
 
-        if (events.OfType<RoundEnded>().Any() && _state?.Phase == Phase.RoundOver)
+        if (events.OfType<RoundEnded>().Any() && events.OfType<GameEnded>().Any() is false
+            && _state?.Phase == Phase.RoundOver)
+        {
             _state = RoundReset.StartNextRound(_state, Random.Shared.Next());
+            await BroadcastStateOnly(_state);
+            ScheduleBotTurnIfNeeded(_state);
+        }
+    }
+
+    private async Task BroadcastStateOnly(GameState state)
+    {
+        foreach (var viewerId in _getViewers())
+        {
+            var dto = StateProjection.Project(_roomCode, state, viewerId);
+            await _onBroadcast(viewerId, dto, Array.Empty<GameEventDto>(), state.Version);
+        }
     }
 
     private void ScheduleBotTurnIfNeeded(GameState state)
