@@ -1,8 +1,7 @@
 "use client";
+
 import { useEffect, useMemo } from "react";
-import * as THREE from "three";
-import { useLoader } from "@react-three/fiber";
-import { uvForCard, uvForBack } from "@/lib/cards/cardAtlas";
+import { useCardTexture } from "./CardTextureProvider";
 
 type Props = {
   color: string;
@@ -23,28 +22,23 @@ export function CardMesh({
   opacity = 1,
   onClick,
 }: Props) {
-  const baseTexture = useLoader(THREE.TextureLoader, "/uno_classic.png");
+  const { getMaterial } = useCardTexture();
 
   const material = useMemo(() => {
-    const uv = faceUp ? uvForCard(color, type) : uvForBack();
-    const tex = baseTexture.clone();
-    tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
-    tex.offset.set(uv.u, uv.v);
-    tex.repeat.set(uv.w, uv.h);
-    tex.needsUpdate = true;
-    return new THREE.MeshStandardMaterial({
-      map: tex,
-      transparent: true,
-      opacity,
-    });
-  }, [baseTexture, color, type, faceUp, opacity]);
+    const cached = getMaterial(faceUp, color, type);
+    if (opacity === 1) return cached;
+    const tinted = cached.clone();
+    tinted.opacity = opacity;
+    tinted.transparent = true;
+    return tinted;
+  }, [getMaterial, faceUp, color, type, opacity]);
 
   useEffect(() => {
+    if (opacity === 1) return;
     return () => {
-      material.map?.dispose();
       material.dispose();
     };
-  }, [material]);
+  }, [material, opacity]);
 
   return (
     <mesh
