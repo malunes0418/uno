@@ -64,25 +64,10 @@ a {
   height: 100% !important;
 }
 
-.hud,
 .color-picker,
 .scoreboard {
   position: absolute;
   z-index: 10;
-}
-
-.hud {
-  top: 1rem;
-  left: 1rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  border-radius: 0.5rem;
-  font-size: 0.9rem;
-  pointer-events: none;
 }
 
 .scoreboard {

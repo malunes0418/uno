@@ -1,0 +1,199 @@
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-4);
+}
+
+.topBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: rgba(0, 0, 0, 0.62);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(8px);
+  width: fit-content;
+  max-width: min(100%, 36rem);
+}
+
+.turnPill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: 999px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.turnPillYou {
+  background: rgba(229, 57, 53, 0.22);
+  border-color: rgba(229, 57, 53, 0.55);
+  box-shadow: 0 0 0 1px rgba(229, 57, 53, 0.25);
+}
+
+.youBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: var(--uno-red);
+  color: var(--foreground);
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.turnName {
+  max-width: 8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.directionBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  color: var(--uno-yellow);
+}
+
+.directionArrow {
+  transform: rotate(90deg);
+}
+
+.directionArrowReverse {
+  transform: rotate(-90deg) scaleX(-1);
+}
+
+.colorChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-1);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+}
+
+.colorDot {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.colorCard {
+  box-shadow: var(--shadow-sm);
+}
+
+.colorLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--foreground-muted);
+}
+
+.drawStack {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3) var(--space-1) var(--space-1);
+  border-radius: var(--radius-md);
+  background: rgba(211, 47, 47, 0.18);
+  border: 1px solid rgba(229, 57, 53, 0.45);
+}
+
+.drawStackCards {
+  position: relative;
+  width: 2.75rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+}
+
+.drawStackCard {
+  position: absolute;
+  top: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.drawStackCard:nth-child(1) {
+  left: 0;
+  z-index: 1;
+}
+
+.drawStackCard:nth-child(2) {
+  left: 0.45rem;
+  z-index: 2;
+}
+
+.drawStackCard:nth-child(3) {
+  left: 0.9rem;
+  z-index: 3;
+}
+
+.drawStackLabel {
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: var(--uno-yellow);
+  letter-spacing: 0.02em;
+}
+
+.phaseBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgba(253, 216, 53, 0.14);
+  border: 1px solid rgba(253, 216, 53, 0.45);
+  color: var(--uno-yellow);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.toast {
+  align-self: center;
+  max-width: min(100%, 24rem);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(211, 47, 47, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  animation: hudToastIn 0.22s ease-out;
+}
+
+@keyframes hudToastIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
