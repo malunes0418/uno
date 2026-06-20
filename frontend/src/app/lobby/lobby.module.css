@@ -246,3 +246,12 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .waitCard1,
+  .waitCard2,
+  .waitCard3 {
+    animation: none;
+    opacity: 0.85;
+  }
+}

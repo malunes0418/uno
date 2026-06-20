@@ -102,6 +102,7 @@ export default function LobbyPage() {
                 type="button"
                 className={styles.copyButton}
                 onClick={() => void copyCode()}
+                aria-label={copied ? "Copied to clipboard" : "Copy to clipboard"}
               >
                 {copied ? "Copied!" : "Copy"}
               </button>

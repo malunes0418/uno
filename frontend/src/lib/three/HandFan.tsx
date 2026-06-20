@@ -1,8 +1,14 @@
 "use client";
 
+import { useIsMobile } from "@/hooks/useMediaQuery";
 import { CardMesh } from "./CardMesh";
 import { useCardHover } from "./useCardHover";
 import type { CardDto } from "@/lib/hub/contract";
+
+const DESKTOP_SPREAD = 0.7;
+const MOBILE_SPREAD = 0.42;
+const DESKTOP_ROTATION = 0.05;
+const MOBILE_ROTATION = 0.03;
 
 function FanCard({
   card,
@@ -36,7 +42,9 @@ export function HandFan({
   playable: Set<number>;
   onSelect: (index: number) => void;
 }) {
-  const spread = 0.7;
+  const isMobile = useIsMobile();
+  const spread = isMobile ? MOBILE_SPREAD : DESKTOP_SPREAD;
+  const rotationStep = isMobile ? MOBILE_ROTATION : DESKTOP_ROTATION;
   const start = -((cards.length - 1) * spread) / 2;
   return (
     <>
@@ -46,7 +54,7 @@ export function HandFan({
           <group
             key={i}
             position={[start + i * spread, 0.05, 3.2]}
-            rotation={[-0.3, 0, (i - cards.length / 2) * 0.05]}
+            rotation={[-0.3, 0, (i - cards.length / 2) * rotationStep]}
           >
             <FanCard
               card={c}

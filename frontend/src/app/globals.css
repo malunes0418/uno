@@ -33,6 +33,20 @@ a {
   text-decoration: none;
 }
 
+:where(
+  a,
+  button,
+  input,
+  select,
+  textarea,
+  summary,
+  [role="button"],
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 2px solid var(--uno-yellow);
+  outline-offset: 2px;
+}
+
 .app-shell {
   width: 100%;
   max-width: var(--app-max-width);
@@ -488,4 +502,29 @@ a {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .color-picker-tile:hover,
+  .jump-in-card:hover,
+  .catch-prompt-target:hover {
+    transform: none;
+  }
+
+  .uno-button-pill {
+    animation: none;
+  }
+
+  .catch-prompt {
+    animation: none;
+  }
+
+  .scoreboard-modal {
+    animation-duration: 0.08s;
+  }
+
+  .scoreboard-confetti-piece {
+    animation: none;
+    opacity: 0;
+  }
 }

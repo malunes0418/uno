@@ -150,6 +150,11 @@
   list-style: none;
 }
 
+.rulesToggle:focus-visible {
+  outline: 2px solid var(--uno-yellow);
+  outline-offset: 2px;
+}
+
 .rulesToggle::-webkit-details-marker {
   display: none;
 }
@@ -163,6 +168,12 @@
 
 .rulesCollapse[open] .rulesToggle::after {
   transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rulesToggle::after {
+    transition: none;
+  }
 }
 
 .rulesContent {
@@ -200,6 +211,19 @@
 
   .tagline {
     max-width: none;
+  }
+
+  .cardFan {
+    width: 9rem;
+    height: 6rem;
+  }
+
+  .cardFan > :nth-child(1) {
+    transform: translateX(-50%) rotate(-12deg) translateX(-0.75rem);
+  }
+
+  .cardFan > :nth-child(3) {
+    transform: translateX(-50%) rotate(12deg) translateX(0.75rem);
   }
 
   .rulesToggle {
