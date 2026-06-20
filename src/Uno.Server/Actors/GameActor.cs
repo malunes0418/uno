@@ -3,7 +3,9 @@ using Uno.Engine.Commands;
 using Uno.Engine.Events;
 using Uno.Engine.Setup;
 using Uno.Engine.State;
+using Uno.Server.Bots;
 using Uno.Server.Contracts;
+using Uno.Server.Options;
 
 namespace Uno.Server.Actors;
 
@@ -14,6 +16,7 @@ public class GameActor : IAsyncDisposable
     private readonly string _roomCode;
     private readonly Func<string, ClientGameStateDto, IReadOnlyList<GameEventDto>, int, Task> _onBroadcast;
     private readonly Func<IReadOnlyList<string>> _getViewers;
+    private readonly GameOptions _options;
     private GameState? _state;
     private Task? _loop;
     private CancellationTokenSource? _cts;
@@ -26,11 +29,13 @@ public class GameActor : IAsyncDisposable
         IReadOnlyList<(string Id, string Name, bool IsBot)> seats,
         int seed,
         Func<string, ClientGameStateDto, IReadOnlyList<GameEventDto>, int, Task> onBroadcast,
-        Func<IReadOnlyList<string>> getViewers)
+        Func<IReadOnlyList<string>> getViewers,
+        GameOptions? options = null)
     {
         _roomCode = roomCode;
         _onBroadcast = onBroadcast;
         _getViewers = getViewers;
+        _options = options ?? new GameOptions();
         _state = GameSetup.NewGame(seats, rules, seed);
     }
 
@@ -67,6 +72,7 @@ public class GameActor : IAsyncDisposable
                 var result = Uno.Engine.Engine.Apply(_state, msg.Command);
                 _state = result.State;
                 await Broadcast(_state, result.Events);
+                ScheduleBotTurnIfNeeded(_state);
                 msg.Ack.SetResult(true);
             }
             catch (Exception ex)
@@ -84,6 +90,25 @@ public class GameActor : IAsyncDisposable
             var dto = StateProjection.Project(_roomCode, state, viewerId);
             await _onBroadcast(viewerId, dto, eventDtos, state.Version);
         }
+    }
+
+    private void ScheduleBotTurnIfNeeded(GameState state)
+    {
+        if (!state.CurrentPlayer.IsBot) return;
+
+        var botId = state.CurrentPlayer.Id;
+        var version = state.Version;
+        var delayMs = Random.Shared.Next(_options.BotMinDelayMs, _options.BotMaxDelayMs + 1);
+
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(delayMs);
+            if (_state is null || _state.Version != version || _state.CurrentPlayer.Id != botId)
+                return;
+
+            var command = BotDriver.ChooseCommand(_state, botId);
+            await SubmitAsync(command, version);
+        });
     }
 
     public async ValueTask DisposeAsync()
