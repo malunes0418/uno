@@ -10,6 +10,7 @@ type Props = {
   faceUp?: boolean;
   position?: [number, number, number];
   rotation?: [number, number, number];
+  onClick?: () => void;
 };
 
 export function CardMesh({
@@ -18,6 +19,7 @@ export function CardMesh({
   faceUp = true,
   position = [0, 0, 0],
   rotation = [0, 0, 0],
+  onClick,
 }: Props) {
   const baseTexture = useLoader(THREE.TextureLoader, "/uno_classic.png");
 
@@ -42,7 +44,19 @@ export function CardMesh({
   }, [material]);
 
   return (
-    <mesh position={position} rotation={rotation} material={material}>
+    <mesh
+      position={position}
+      rotation={rotation}
+      material={material}
+      onClick={
+        onClick
+          ? (e) => {
+              e.stopPropagation();
+              onClick();
+            }
+          : undefined
+      }
+    >
       <planeGeometry args={[0.63, 0.88]} />
     </mesh>
   );

@@ -1,7 +1,7 @@
 "use client";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { CardMesh } from "./CardMesh";
+import { SceneContent } from "./SceneContent";
 
 export function TableScene() {
   return (
@@ -12,7 +12,7 @@ export function TableScene() {
         <planeGeometry args={[12, 8]} />
         <meshStandardMaterial color="#1a5c3a" />
       </mesh>
-      <CardMesh color="Red" type="Five" position={[0, 0.05, 0]} />
+      <SceneContent />
       <OrbitControls maxPolarAngle={Math.PI / 2.2} />
     </Canvas>
   );
