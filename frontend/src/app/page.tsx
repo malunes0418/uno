@@ -5,9 +5,11 @@ import { usePlayerStore } from "@/lib/store/playerStore";
 import { GameHubClient } from "@/lib/hub/gameHubClient";
 import { useGameStore } from "@/lib/store/gameStore";
 import { Button } from "@/components/ui/Button";
+import { CardFace } from "@/components/ui/CardFace";
 import { RuleToggles } from "@/components/ui/RuleToggles";
 import { TextField } from "@/components/ui/TextField";
 import type { RuleSetDto } from "@/lib/hub/contract";
+import styles from "./home.module.css";
 
 const defaultRules: RuleSetDto = {
   stacking: "None",
@@ -60,22 +62,78 @@ export default function Home() {
   };
 
   return (
-    <main className="home">
-      <h1>UNO Classic</h1>
-      <TextField
-        placeholder="Display name"
-        value={displayName}
-        onChange={(e) => setDisplayName(e.target.value)}
-      />
-      {nameError && <p>Enter your name</p>}
-      <RuleToggles rules={rules} onChange={setRules} />
-      <Button onClick={createRoom}>Create Room</Button>
-      <TextField
-        placeholder="Join code"
-        value={joinCode}
-        onChange={(e) => setJoinCode(e.target.value)}
-      />
-      <Button onClick={joinRoom}>Join</Button>
+    <main className={styles.home}>
+      <div className={`app-shell ${styles.shell}`}>
+        <section className={styles.hero} aria-label="Welcome">
+          <h1 className={styles.title}>
+            <span className={styles.titleAccent}>UNO</span> Classic
+          </h1>
+          <p className={styles.tagline}>
+            Deal in, stack wilds, and race to empty your hand — online with friends.
+          </p>
+          <div className={styles.cardFan} aria-hidden>
+            <CardFace />
+            <CardFace />
+            <CardFace />
+          </div>
+        </section>
+
+        <section className={`page-card ${styles.formCard}`} aria-label="Create or join a room">
+          <div className={styles.section}>
+            <label className={styles.fieldLabel} htmlFor="display-name">
+              Display name
+            </label>
+            <TextField
+              id="display-name"
+              placeholder="Your name at the table"
+              value={displayName}
+              onChange={(e) => {
+                setDisplayName(e.target.value);
+                if (nameError && e.target.value.trim()) setNameError(false);
+              }}
+              className={nameError ? styles.inputError : undefined}
+              aria-invalid={nameError}
+              aria-describedby={nameError ? "name-error" : undefined}
+            />
+            {nameError && (
+              <span id="name-error" className={styles.errorMessage} role="alert">
+                Enter your name
+              </span>
+            )}
+          </div>
+
+          <details className={`${styles.rulesSection} ${styles.rulesCollapse}`}>
+            <summary className={styles.rulesToggle}>House rules</summary>
+            <div className={styles.rulesContent}>
+              <RuleToggles rules={rules} onChange={setRules} />
+            </div>
+          </details>
+
+          <div className={styles.roomActions}>
+            <Button className={styles.actionButton} onClick={createRoom}>
+              Create Room
+            </Button>
+            <div className={styles.joinGroup}>
+              <label className={styles.fieldLabel} htmlFor="join-code">
+                Join with code
+              </label>
+              <TextField
+                id="join-code"
+                placeholder="ABCD"
+                value={joinCode}
+                onChange={(e) => setJoinCode(e.target.value)}
+              />
+              <Button
+                variant="secondary"
+                className={styles.actionButton}
+                onClick={joinRoom}
+              >
+                Join
+              </Button>
+            </div>
+          </div>
+        </section>
+      </div>
     </main>
   );
 }
