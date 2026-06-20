@@ -23,3 +23,10 @@ Thumbs.db
 # Claude Code local settings
 .claude/settings.local.json
 .claude/*.lock
+
+# .NET
+bin/
+obj/
+
+# Git worktrees
+.worktrees/
