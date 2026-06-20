@@ -1,18 +1,7 @@
 import { Html } from "@react-three/drei";
 import { CardMesh } from "./CardMesh";
 import type { ClientPlayerDto } from "@/lib/hub/contract";
-
-function seatPosition(
-  viewerIndex: number,
-  playerIndex: number,
-  total: number,
-): [number, number, number] {
-  const rel = (playerIndex - viewerIndex + total) % total;
-  const angle = Math.PI / 2 - rel * ((2 * Math.PI) / total);
-  const rx = 4;
-  const rz = 2.8;
-  return [rx * Math.cos(angle), 0.05, rz * Math.sin(angle)];
-}
+import { seatPosition } from "./playerSeat";
 
 export function OpponentRow({
   players,

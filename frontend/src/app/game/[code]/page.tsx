@@ -87,7 +87,7 @@ function GameOverlays() {
 }
 
 function AnimationRunner() {
-  useAnimationQueue(() => {});
+  useAnimationQueue();
   return null;
 }
 

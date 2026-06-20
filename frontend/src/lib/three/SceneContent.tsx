@@ -9,6 +9,7 @@ import { useGameHubRef } from "@/lib/hub/GameHubContext";
 import { HandFan } from "./HandFan";
 import { DrawDiscardPiles } from "./DrawDiscardPiles";
 import { OpponentRow } from "./OpponentRow";
+import { AnimationLayer } from "./AnimationLayer";
 
 export function SceneContent() {
   const state = useGameStore((s) => s.gameState);
@@ -42,6 +43,7 @@ export function SceneContent() {
 
   return (
     <>
+      <AnimationLayer />
       <DrawDiscardPiles
         topCard={state.topCard}
         drawCount={state.drawPileCount}
