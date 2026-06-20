@@ -1,8 +1,10 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Uno.Engine/Uno.Engine.csproj" />
+    <Project Path="src/Uno.Server/Uno.Server.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Uno.Engine.Tests/Uno.Engine.Tests.csproj" />
+    <Project Path="tests/Uno.Server.Tests/Uno.Server.Tests.csproj" />
   </Folder>
 </Solution>
