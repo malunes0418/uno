@@ -42,11 +42,11 @@ describe("CardMesh", () => {
     ).not.toThrow();
   });
 
-  it("opacityCloneDoesNotDisposeSharedTextureMap", () => {
+  it("playableCloneDoesNotDisposeSharedTextureMap", () => {
     const { unmount } = render(
       <div data-testid="mock-canvas">
         <CardTextureProvider>
-          <CardMesh color="Red" type="Five" opacity={0.4} />
+          <CardMesh color="Red" type="Five" playable={false} />
         </CardTextureProvider>
       </div>,
     );
