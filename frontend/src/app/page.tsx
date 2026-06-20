@@ -1,66 +1,76 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { usePlayerStore } from "@/lib/store/playerStore";
+import { GameHubClient } from "@/lib/hub/gameHubClient";
+import { useGameStore } from "@/lib/store/gameStore";
+import { Button } from "@/components/ui/Button";
+
+const defaultRules = {
+  stacking: "None" as const,
+  drawToMatch: false,
+  jumpIn: false,
+  sevenZero: false,
+  forcedUnoPenalty: false,
+  sameNumberMultiPlay: false,
+  cumulativeScoring: false,
+  wildDrawFourChallenge: false,
+};
 
 export default function Home() {
+  const router = useRouter();
+  const { displayName, setDisplayName, ensurePlayerId, load } = usePlayerStore();
+  const [joinCode, setJoinCode] = useState("");
+  const [nameError, setNameError] = useState(false);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const requireName = () => {
+    if (!displayName.trim()) {
+      setNameError(true);
+      return false;
+    }
+    setNameError(false);
+    return true;
+  };
+
+  const createRoom = async () => {
+    if (!requireName()) return;
+    const hub = new GameHubClient();
+    await hub.start();
+    const playerId = ensurePlayerId();
+    const { code } = await hub.createRoom(defaultRules, displayName.trim(), playerId);
+    useGameStore.getState().reset();
+    router.push(`/lobby/${code}`);
+  };
+
+  const joinRoom = async () => {
+    if (!requireName()) return;
+    const hub = new GameHubClient();
+    await hub.start();
+    const playerId = ensurePlayerId();
+    await hub.joinRoom(joinCode.trim().toUpperCase(), displayName.trim(), playerId);
+    router.push(`/lobby/${joinCode.trim().toUpperCase()}`);
+  };
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main className="home">
+      <h1>UNO Classic</h1>
+      <input
+        placeholder="Display name"
+        value={displayName}
+        onChange={(e) => setDisplayName(e.target.value)}
+      />
+      {nameError && <p>Enter your name</p>}
+      <Button onClick={createRoom}>Create Room</Button>
+      <input
+        placeholder="Join code"
+        value={joinCode}
+        onChange={(e) => setJoinCode(e.target.value)}
+      />
+      <Button onClick={joinRoom}>Join</Button>
+    </main>
   );
 }
