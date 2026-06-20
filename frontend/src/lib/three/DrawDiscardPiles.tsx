@@ -4,9 +4,11 @@ import type { CardDto } from "@/lib/hub/contract";
 export function DrawDiscardPiles({
   topCard,
   drawCount,
+  onDraw,
 }: {
   topCard: CardDto;
   drawCount: number;
+  onDraw?: () => void;
 }) {
   const stackLayers = Math.min(Math.max(drawCount, 1), 5);
 
@@ -19,6 +21,7 @@ export function DrawDiscardPiles({
           type="Zero"
           faceUp={false}
           position={[-0.8, 0.05 + i * 0.002, -i * 0.03]}
+          onClick={i === stackLayers - 1 ? onDraw : undefined}
         />
       ))}
       <CardMesh

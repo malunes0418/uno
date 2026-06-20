@@ -10,6 +10,7 @@ type Props = {
   faceUp?: boolean;
   position?: [number, number, number];
   rotation?: [number, number, number];
+  opacity?: number;
   onClick?: () => void;
 };
 
@@ -19,6 +20,7 @@ export function CardMesh({
   faceUp = true,
   position = [0, 0, 0],
   rotation = [0, 0, 0],
+  opacity = 1,
   onClick,
 }: Props) {
   const baseTexture = useLoader(THREE.TextureLoader, "/uno_classic.png");
@@ -33,8 +35,9 @@ export function CardMesh({
     return new THREE.MeshStandardMaterial({
       map: tex,
       transparent: true,
+      opacity,
     });
-  }, [baseTexture, color, type, faceUp]);
+  }, [baseTexture, color, type, faceUp, opacity]);
 
   useEffect(() => {
     return () => {
