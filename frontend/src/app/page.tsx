@@ -6,6 +6,7 @@ import { GameHubClient } from "@/lib/hub/gameHubClient";
 import { useGameStore } from "@/lib/store/gameStore";
 import { Button } from "@/components/ui/Button";
 import { RuleToggles } from "@/components/ui/RuleToggles";
+import { TextField } from "@/components/ui/TextField";
 import type { RuleSetDto } from "@/lib/hub/contract";
 
 const defaultRules: RuleSetDto = {
@@ -61,7 +62,7 @@ export default function Home() {
   return (
     <main className="home">
       <h1>UNO Classic</h1>
-      <input
+      <TextField
         placeholder="Display name"
         value={displayName}
         onChange={(e) => setDisplayName(e.target.value)}
@@ -69,7 +70,7 @@ export default function Home() {
       {nameError && <p>Enter your name</p>}
       <RuleToggles rules={rules} onChange={setRules} />
       <Button onClick={createRoom}>Create Room</Button>
-      <input
+      <TextField
         placeholder="Join code"
         value={joinCode}
         onChange={(e) => setJoinCode(e.target.value)}

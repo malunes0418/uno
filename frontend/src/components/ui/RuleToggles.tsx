@@ -1,6 +1,8 @@
 "use client";
 
 import type { RuleSetDto, StackingMode } from "@/lib/hub/contract";
+import { Checkbox } from "@/components/ui/Checkbox";
+import styles from "./RuleToggles.module.css";
 
 type Props = {
   rules: RuleSetDto;
@@ -23,31 +25,35 @@ export function RuleToggles({ rules, onChange }: Props) {
   };
 
   return (
-    <fieldset>
-      <legend>House rules</legend>
-      <label>
-        Stacking
-        <select
-          value={rules.stacking}
-          onChange={(e) =>
-            onChange({ ...rules, stacking: e.target.value as StackingMode })
-          }
-        >
-          <option value="None">None</option>
-          <option value="SameType">Same type</option>
-          <option value="TwoAndFourInterchangeable">+2/+4 interchangeable</option>
-        </select>
-      </label>
-      {BOOL_RULES.map(({ key, label }) => (
-        <label key={key}>
-          {label}
-          <input
-            type="checkbox"
-            checked={rules[key] as boolean}
-            onChange={() => toggle(key)}
-          />
+    <fieldset className={styles.fieldset}>
+      <legend className={styles.legend}>House rules</legend>
+      <div className={styles.grid}>
+        <label className={styles.row}>
+          <span className={styles.rowLabel}>Stacking</span>
+          <select
+            className={styles.select}
+            value={rules.stacking}
+            onChange={(e) =>
+              onChange({ ...rules, stacking: e.target.value as StackingMode })
+            }
+          >
+            <option value="None">None</option>
+            <option value="SameType">Same type</option>
+            <option value="TwoAndFourInterchangeable">
+              +2/+4 interchangeable
+            </option>
+          </select>
         </label>
-      ))}
+        {BOOL_RULES.map(({ key, label }) => (
+          <label key={key} className={styles.row}>
+            <span className={styles.rowLabel}>{label}</span>
+            <Checkbox
+              checked={rules[key] as boolean}
+              onChange={() => toggle(key)}
+            />
+          </label>
+        ))}
+      </div>
     </fieldset>
   );
 }
