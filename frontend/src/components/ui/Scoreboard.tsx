@@ -1,8 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useGameStore } from "@/lib/store/gameStore";
+import { Button } from "@/components/ui/Button";
 
 export function Scoreboard() {
+  const router = useRouter();
   const state = useGameStore((s) => s.gameState);
   if (!state || (state.phase !== "RoundOver" && state.phase !== "GameOver")) return null;
   return (
@@ -15,6 +18,7 @@ export function Scoreboard() {
           </li>
         ))}
       </ul>
+      <Button onClick={() => router.push("/")}>Play Again</Button>
     </div>
   );
 }

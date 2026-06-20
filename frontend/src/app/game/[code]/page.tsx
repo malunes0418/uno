@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
+import { useAnimationQueue } from "@/lib/animation/useAnimationQueue";
 import { useParams } from "next/navigation";
 import { useGameHub } from "@/hooks/useGameHub";
 import { GameHubProvider, useGameHubRef } from "@/lib/hub/GameHubContext";
@@ -85,12 +86,18 @@ function GameOverlays() {
   );
 }
 
+function AnimationRunner() {
+  useAnimationQueue(() => {});
+  return null;
+}
+
 export default function GamePage() {
   const { code } = useParams<{ code: string }>();
   const hubRef = useGameHub(code);
 
   return (
     <GameHubProvider hubRef={hubRef}>
+      <AnimationRunner />
       <div className="game-shell">
         <TableScene />
         <HudOverlay />

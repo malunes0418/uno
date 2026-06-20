@@ -5,6 +5,7 @@ import { eventToTween, type TweenDescriptor } from "./animationQueue";
 
 export function useAnimationQueue(onDone: () => void) {
   const [active, setActive] = useState<TweenDescriptor | null>(null);
+  const queueLength = useGameStore((s) => s.eventQueue.length);
 
   useEffect(() => {
     if (active) return;
@@ -14,7 +15,7 @@ export function useAnimationQueue(onDone: () => void) {
     setActive(tween);
     const t = setTimeout(() => { setActive(null); onDone(); }, tween.durationMs);
     return () => clearTimeout(t);
-  }, [active, onDone]);
+  }, [active, onDone, queueLength]);
 
   return active;
 }

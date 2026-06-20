@@ -30,6 +30,9 @@ export default function LobbyPage() {
       await hub.start();
       await hub.reconnect(code, ensurePlayerId(), displayName);
     })();
+    return () => {
+      void hub.stop();
+    };
   }, [code, displayName, ensurePlayerId, router]);
 
   const isHost = room?.hostId === playerId;
