@@ -16,6 +16,7 @@ public class GameActor : IAsyncDisposable
     private readonly string _roomCode;
     private readonly Func<string, ClientGameStateDto, IReadOnlyList<GameEventDto>, int, Task> _onBroadcast;
     private readonly Func<IReadOnlyList<string>> _getViewers;
+    private readonly Func<GameState, Task>? _onGameEnded;
     private readonly GameOptions _options;
     private GameState? _state;
     private Task? _loop;
@@ -30,11 +31,13 @@ public class GameActor : IAsyncDisposable
         int seed,
         Func<string, ClientGameStateDto, IReadOnlyList<GameEventDto>, int, Task> onBroadcast,
         Func<IReadOnlyList<string>> getViewers,
+        Func<GameState, Task>? onGameEnded = null,
         GameOptions? options = null)
     {
         _roomCode = roomCode;
         _onBroadcast = onBroadcast;
         _getViewers = getViewers;
+        _onGameEnded = onGameEnded;
         _options = options ?? new GameOptions();
         _state = GameSetup.NewGame(seats, rules, seed);
     }
@@ -90,6 +93,12 @@ public class GameActor : IAsyncDisposable
             var dto = StateProjection.Project(_roomCode, state, viewerId);
             await _onBroadcast(viewerId, dto, eventDtos, state.Version);
         }
+
+        if (events.OfType<GameEnded>().Any() && _onGameEnded is not null)
+            await _onGameEnded(_state!);
+
+        if (events.OfType<RoundEnded>().Any() && _state?.Phase == Phase.RoundOver)
+            _state = RoundReset.StartNextRound(_state, Random.Shared.Next());
     }
 
     private void ScheduleBotTurnIfNeeded(GameState state)
