@@ -9,3 +9,5 @@ export const callUno = (playerId: string): CommandDto => ({ type: "CallUno", pla
 export const catchUno = (playerId: string, targetId: string): CommandDto =>
   ({ type: "CatchUno", playerId, targetId });
 export const challenge = (playerId: string): CommandDto => ({ type: "Challenge", playerId });
+export const chooseSevenSwapTarget = (playerId: string, targetId: string): CommandDto =>
+  ({ type: "ChooseSevenSwapTarget", playerId, targetId });

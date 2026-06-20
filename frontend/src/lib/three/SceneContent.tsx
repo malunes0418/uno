@@ -21,6 +21,19 @@ export function SceneContent() {
       const current = useGameStore.getState().gameState;
       const hub = hubRef.current;
       if (!current || !hub) return;
+
+      const me = current.players.find((p) => p.id === playerId);
+      const card = me?.hand?.[index];
+      if (
+        current.rules.sevenZero &&
+        card?.type === "Zero" &&
+        me?.hand &&
+        me.hand.length > 1
+      ) {
+        useGameStore.getState().setPendingZeroHandIndex(index);
+        return;
+      }
+
       void hub.sendCommand(
         current.roomCode,
         playCard(playerId, [index]),

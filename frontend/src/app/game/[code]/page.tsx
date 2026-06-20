@@ -8,7 +8,10 @@ import { GameHubProvider, useGameHubRef } from "@/lib/hub/GameHubContext";
 import {
   callUno,
   catchUno,
+  challenge,
   chooseColor,
+  chooseSevenSwapTarget,
+  drawCard,
   playCard,
 } from "@/lib/hub/commandBuilders";
 import type { CommandDto } from "@/lib/hub/contract";
@@ -21,9 +24,13 @@ import { UnoButton } from "@/components/ui/UnoButton";
 import { CatchPrompt } from "@/components/ui/CatchPrompt";
 import { JumpInHighlight } from "@/components/ui/JumpInHighlight";
 import { Scoreboard } from "@/components/ui/Scoreboard";
+import { ChallengePrompt } from "@/components/ui/ChallengePrompt";
+import { SevenZeroPrompt } from "@/components/ui/SevenZeroPrompt";
 
 function GameOverlays() {
   const state = useGameStore((s) => s.gameState);
+  const pendingZeroHandIndex = useGameStore((s) => s.pendingZeroHandIndex);
+  const setPendingZeroHandIndex = useGameStore((s) => s.setPendingZeroHandIndex);
   const playerId = usePlayerStore((s) => s.playerId);
   const hubRef = useGameHubRef();
 
@@ -65,6 +72,23 @@ function GameOverlays() {
     !isMyTurn &&
     me?.hand != null;
 
+  const showChallenge =
+    state.phase === "AwaitingChallenge" &&
+    state.rules.wildDrawFourChallenge &&
+    isMyTurn;
+
+  const showSevenSwap =
+    state.phase === "AwaitingSevenTarget" &&
+    state.rules.sevenZero &&
+    state.pendingWildPlayerId === playerId;
+
+  const sevenSwapTargets = state.players
+    .filter((p) => p.id !== playerId)
+    .map((p) => ({ id: p.id, name: p.name }));
+
+  const showSevenRotate =
+    pendingZeroHandIndex !== null && state.rules.sevenZero;
+
   return (
     <>
       {showColorPicker && (
@@ -80,6 +104,33 @@ function GameOverlays() {
           hand={me.hand}
           topCard={state.topCard}
           onPlay={(index) => send(playCard(playerId, [index]))}
+        />
+      )}
+      {showChallenge && (
+        <ChallengePrompt
+          pendingDraw={state.pendingDraw}
+          onChallenge={() => send(challenge(playerId))}
+          onAccept={() => send(drawCard(playerId))}
+        />
+      )}
+      {showSevenSwap && (
+        <SevenZeroPrompt
+          variant="swap"
+          targets={sevenSwapTargets}
+          onSelect={(targetId) =>
+            send(chooseSevenSwapTarget(playerId, targetId))
+          }
+        />
+      )}
+      {showSevenRotate && (
+        <SevenZeroPrompt
+          variant="rotate"
+          direction={state.direction}
+          onConfirm={() => {
+            send(playCard(playerId, [pendingZeroHandIndex]));
+            setPendingZeroHandIndex(null);
+          }}
+          onCancel={() => setPendingZeroHandIndex(null)}
         />
       )}
     </>
