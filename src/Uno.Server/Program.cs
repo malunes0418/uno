@@ -1,9 +1,11 @@
+﻿using Uno.Server.Actors;
 using Uno.Server.Rooms;
 using Uno.Server.Sessions;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<GameRegistry>();
 builder.Services.AddSingleton<ConnectionRegistry>();
+builder.Services.AddSingleton<DisconnectMonitor>();
 builder.Services.AddHealthChecks();
 builder.Services.AddSignalR()
     .AddJsonProtocol(o => o.PayloadSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase);

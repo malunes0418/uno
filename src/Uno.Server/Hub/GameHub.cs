@@ -1,4 +1,6 @@
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
+using Uno.Engine.Commands;
+using Uno.Engine.State;
 using Uno.Server.Actors;
 using Uno.Server.Contracts;
 using Uno.Server.Rooms;
@@ -10,11 +12,13 @@ public class GameHub : Microsoft.AspNetCore.SignalR.Hub
 {
     private readonly GameRegistry _registry;
     private readonly ConnectionRegistry _connections;
+    private readonly DisconnectMonitor _disconnectMonitor;
 
-    public GameHub(GameRegistry registry, ConnectionRegistry connections)
+    public GameHub(GameRegistry registry, ConnectionRegistry connections, DisconnectMonitor disconnectMonitor)
     {
         _registry = registry;
         _connections = connections;
+        _disconnectMonitor = disconnectMonitor;
     }
 
     public async Task<CreateRoomResult> CreateRoom(RuleSetDto rulesDto, string displayName, string playerId)
@@ -85,6 +89,53 @@ public class GameHub : Microsoft.AspNetCore.SignalR.Hub
         if (room.Actor is null) throw new HubException("Game not started.");
         var cmd = DtoMappers.ToEngine(commandDto);
         await room.Actor.SubmitAsync(cmd, lastSeenVersion);
+    }
+
+    public async Task Reconnect(string code, string playerId, string displayName)
+    {
+        var room = _registry.GetRoom(code) ?? throw new HubException("Room not found.");
+        _connections.RegisterPlayer(code, playerId, displayName);
+        _connections.MapConnection(code, playerId, Context.ConnectionId);
+        await Groups.AddToGroupAsync(Context.ConnectionId, code);
+        SetPlayerConnected(room, playerId, connected: true);
+        _disconnectMonitor.Cancel(code, playerId);
+        if (room.Actor?.CurrentState is GameState gs)
+        {
+            var dto = StateProjection.Project(code, gs, playerId);
+            await Clients.Caller.SendAsync("GameStateUpdated", dto);
+        }
+        else
+        {
+            await Clients.Caller.SendAsync("RoomUpdated", ToRoomDto(room));
+        }
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        var roomCode = _connections.GetRoomForConnection(Context.ConnectionId);
+        var playerId = _connections.GetPlayerId(Context.ConnectionId);
+        _connections.Disconnect(Context.ConnectionId);
+        if (roomCode is not null && playerId is not null)
+        {
+            var room = _registry.GetRoom(roomCode);
+            if (room is not null)
+            {
+                SetPlayerConnected(room, playerId, connected: false);
+                _disconnectMonitor.Schedule(roomCode, playerId, TimeSpan.FromSeconds(30), async () =>
+                {
+                    if (room.Actor?.CurrentState is { } s && s.CurrentPlayer.Id == playerId)
+                        await room.Actor.SubmitAsync(new DrawCard(playerId), s.Version);
+                });
+            }
+        }
+        await base.OnDisconnectedAsync(exception);
+    }
+
+    private static void SetPlayerConnected(Room room, string playerId, bool connected)
+    {
+        var index = room.Players.FindIndex(p => p.Id == playerId);
+        if (index >= 0)
+            room.Players[index] = room.Players[index] with { Connected = connected };
     }
 
     private async Task BroadcastRoom(Room room)
